@@ -4,7 +4,7 @@ import { Token } from "../../models/token.model.js";
 import { generateToken, hashToken } from "../../utils/token.util.js";
 import { sendEmail } from "../../utils/sendEmail.util.js";
 import { CustomError } from "../../utils/customError.util.js";
-
+import { verifyEmailTemplate } from "../../utils/emailTemplates/verfiyEmailTemplate.js";
 export const registerService = async ({ userName, email, password }) => {
   // Validate inputs
   if (!userName || !email || !password) {
@@ -22,7 +22,11 @@ export const registerService = async ({ userName, email, password }) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ userName, email, password: hashedPassword });
+    const user = await User.create({
+      userName,
+      email,
+      password: hashedPassword,
+    });
 
     const rawToken = generateToken(20);
     const tokenHash = hashToken(rawToken);
@@ -35,12 +39,13 @@ export const registerService = async ({ userName, email, password }) => {
       expiresAt,
     });
 
-    const verifyLink = `${process.env.FRONTEND_URL}/verify?token=${rawToken}&id=${user._id}`;
-    await sendEmail(
-      email,
-      "Verify your account",
-      `<p>Hello ${userName}, click <a href="${verifyLink}">here</a> to verify your account.</p>`
-    );
+    const verifyLink = `${process.env.APP_BASE_URL}/api/auth/verify?token=${rawToken}&id=${user._id}`;
+
+    const basicHTML = `<p>Hello ${userName}, click <a href="${verifyLink}">here</a> to verify your account.</p>`;
+
+    const htmlContent = verifyEmailTemplate(userName, verifyLink);
+
+    await sendEmail(email, "Verify your account", htmlContent);
 
     return user;
   } catch (error) {
@@ -48,7 +53,7 @@ export const registerService = async ({ userName, email, password }) => {
     if (error instanceof CustomError) {
       throw error;
     }
-    
+
     // Handle database errors
     if (error.code === 11000) {
       throw new CustomError("Email already exists", 409);
@@ -56,7 +61,10 @@ export const registerService = async ({ userName, email, password }) => {
 
     // Handle email sending errors
     if (error.message.includes("SMTP")) {
-      throw new CustomError("Failed to send verification email. Please try again later.", 500);
+      throw new CustomError(
+        "Failed to send verification email. Please try again later.",
+        500
+      );
     }
 
     throw new CustomError(error.message || "Registration failed", 500);
