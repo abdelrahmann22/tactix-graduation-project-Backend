@@ -33,7 +33,7 @@ export const sendEmail = async (to, subject, html) => {
 export const sendEmailUsingResend = async (to, subject, html) => {
   try {
     await resend.emails.send({
-      from: process.env.RESEND_EMAIL_FROM,
+      //from: process.env.RESEND_EMAIL_FROM,
       to,
       subject,
       html,
