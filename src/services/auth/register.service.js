@@ -45,8 +45,8 @@ export const registerService = async ({ userName, email, password }) => {
 
     const htmlContent = verifyEmailTemplate(userName, verifyLink);
 
-    //await sendEmail(email, "Verify your account", htmlContent);
-    await sendEmailUsingResend(email, "Verify your account", htmlContent);
+    await sendEmail(email, "Verify your account", htmlContent);
+    //await sendEmailUsingResend(email, "Verify your account", htmlContent);
     return user;
   } catch (error) {
     // If it's already a CustomError, rethrow it
