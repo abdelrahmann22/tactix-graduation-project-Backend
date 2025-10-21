@@ -1,6 +1,6 @@
 // src/config/multer.config.js
 import multer from "multer";
-import { CustomError } from "../utils/customError.util.js";
+import { AppError } from "../utils/app.error.js";
 
 // Use memory storage (stores file in buffer instead of disk)
 const storage = multer.memoryStorage();
@@ -10,7 +10,7 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
-    cb(new CustomError("Only image files are allowed", 400));
+    cb(new AppError(400, "Only image files are allowed"));
   }
 };
 
