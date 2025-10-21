@@ -18,6 +18,7 @@ export const sendEmail = async (to, subject, html) => {
     console.log("SMTP server is ready to send emails.");
 
     console.log("sending Email To", to);
+    console.log("sending Email from", process.env.EMAIL_FROM);
     const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM,
       to,
