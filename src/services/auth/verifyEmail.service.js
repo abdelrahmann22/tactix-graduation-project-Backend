@@ -1,12 +1,12 @@
 import { hashToken } from "../../utils/token.util.js";
 import { Token } from "../../models/token.model.js";
 import { User } from "../../models/user.model.js";
-import { CustomError } from "../../utils/customError.util.js";
+import { AppError } from "../../utils/app.error.js";
 
 export const verifyEmailService = async ({ userId, token }) => {
   // Validate inputs
   if (!userId || !token) {
-    throw new CustomError("Missing token or user id", 400);
+    throw new AppError(400, "Missing token or user id");
   }
 
   try {
@@ -19,7 +19,7 @@ export const verifyEmailService = async ({ userId, token }) => {
     });
 
     if (!tokenDoc) {
-      throw new CustomError("Invalid or expired verification token", 401);
+      throw new AppError(401, "Invalid or expired verification token");
     }
 
     // Mark user as verified
@@ -27,7 +27,7 @@ export const verifyEmailService = async ({ userId, token }) => {
     if (!user) {
       // cleanup token(s) if user doesn't exist
       await Token.deleteMany({ userId, type: "verify" });
-      throw new CustomError("User not found", 404);
+      throw new AppError(404, "User not found");
     }
 
     if (user.isVerified) {
@@ -44,11 +44,11 @@ export const verifyEmailService = async ({ userId, token }) => {
 
     return user;
   } catch (error) {
-    // If it's already a CustomError, rethrow it
-    if (error instanceof CustomError) {
+    // If it's already a AppError, rethrow it
+    if (error instanceof AppError) {
       throw error;
     }
 
-    throw new CustomError(error.message || "Email verification failed", 500);
+    throw new AppError(500, error.message || "Email verification failed");
   }
 };

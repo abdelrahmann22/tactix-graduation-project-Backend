@@ -3,7 +3,7 @@ import { User } from "../../models/user.model.js";
 import { Token } from "../../models/token.model.js";
 import { generateToken, hashToken } from "../../utils/token.util.js";
 import { sendEmail } from "../../utils/sendEmail.util.js";
-import { CustomError } from "../../utils/customError.util.js";
+import { AppError } from "../../utils/app.error.js";
 import { verifyEmailTemplate } from "../../utils/emailTemplates/verfiyEmailTemplate.js";
 import { uploadToCloudinary } from "../../config/profile-pic.cloudinary.config.js";
 export const registerService = async ({
@@ -14,16 +14,16 @@ export const registerService = async ({
 }) => {
   // Validate inputs
   if (!userName || !email || !password) {
-    throw new CustomError("All fields are required", 400);
+    throw new AppError(400, "All fields are required");
   }
 
   const existing = await User.findOne({ email });
   if (existing) {
-    throw new CustomError("Email already registered", 409);
+    throw new AppError(409, "Email already registered");
   }
 
   if (password.length < 6) {
-    throw new CustomError("Password must be at least 6 characters", 400);
+    throw new AppError(400, "Password must be at least 6 characters");
   }
 
   try {
@@ -42,7 +42,7 @@ export const registerService = async ({
 
       email,
       password: hashedPassword,
-      profileImageUrl,
+      ...(profileImageUrl && { profileImageUrl }),
     });
 
     const rawToken = generateToken(20);
@@ -66,24 +66,24 @@ export const registerService = async ({
     //await sendEmailUsingResend(email, "Verify your account", htmlContent);
     return user;
   } catch (error) {
-    // If it's already a CustomError, rethrow it
-    if (error instanceof CustomError) {
+    // If it's already a AppError, rethrow it
+    if (error instanceof AppError) {
       throw error;
     }
 
     // Handle database errors
     if (error.code === 11000) {
-      throw new CustomError("Email already exists", 409);
+      throw new AppError(409, "Email already exists");
     }
 
     // Handle email sending errors
     if (error.message.includes("SMTP")) {
-      throw new CustomError(
-        "Failed to send verification email. Please try again later.",
-        500
+      throw new AppError(
+        500,
+        "Failed to send verification email. Please try again later."
       );
     }
 
-    throw new CustomError(error.message || "Registration failed", 500);
+    throw new AppError(500, error.message || "Registration failed");
   }
 };
