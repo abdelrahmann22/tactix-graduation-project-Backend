@@ -1,30 +1,30 @@
 import bcrypt from "bcryptjs";
 import { User } from "../../models/user.model.js";
 import { signJwt } from "../../utils/jwt.util.js";
-import { CustomError } from "../../utils/customError.util.js";
+import { AppError } from "../../utils/app.error.js";
 
 export const loginService = async ({ email, password }) => {
   // Validate inputs
   if (!email || !password) {
-    throw new CustomError("Email and password are required", 400);
+    throw new AppError(400, "Email and password are required");
   }
 
   try {
     // Find user by email
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      throw new CustomError("Invalid email or password", 401);
+      throw new AppError(401, "Invalid email or password");
     }
 
     // Check if email is verified
     if (!user.isVerified) {
-      throw new CustomError("Please verify your email before logging in", 403);
+      throw new AppError(403, "Please verify your email before logging in");
     }
 
     // Compare passwords
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new CustomError("Invalid email or password", 401);
+      throw new AppError(401, "Invalid email or password");
     }
 
     // Generate JWT token
@@ -40,11 +40,11 @@ export const loginService = async ({ email, password }) => {
       user,
     };
   } catch (error) {
-    // If it's already a CustomError, rethrow it
-    if (error instanceof CustomError) {
+    // If it's already a AppError, rethrow it
+    if (error instanceof AppError) {
       throw error;
     }
 
-    throw new CustomError(error.message || "Login failed", 500);
+    throw new AppError(500, error.message || "Login failed");
   }
 };
