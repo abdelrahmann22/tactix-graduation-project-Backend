@@ -18,7 +18,8 @@ authRouter.post(
   registerController
 );
 authRouter.get("/verify", verifyEmailController);
-authRouter.post("/login", validateLogin, loginController);
+// Remove login validation temporarly
+authRouter.post("/login", loginController);
 
 // Protected routes
 authRouter.get("/profile", authMiddleware, (req, res) => {
