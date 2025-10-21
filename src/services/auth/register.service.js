@@ -5,7 +5,13 @@ import { generateToken, hashToken } from "../../utils/token.util.js";
 import { sendEmail } from "../../utils/sendEmail.util.js";
 import { CustomError } from "../../utils/customError.util.js";
 import { verifyEmailTemplate } from "../../utils/emailTemplates/verfiyEmailTemplate.js";
-export const registerService = async ({ userName, email, password }) => {
+import { uploadToCloudinary } from "../../config/profile-pic.cloudinary.config.js";
+export const registerService = async ({
+  userName,
+  email,
+  password,
+  filePath,
+}) => {
   // Validate inputs
   if (!userName || !email || !password) {
     throw new CustomError("All fields are required", 400);
@@ -22,10 +28,21 @@ export const registerService = async ({ userName, email, password }) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    let profileImageUrl = null;
+    if (filePath?.buffer) {
+      const profilePic = await uploadToCloudinary(filePath.buffer);
+      if (profilePic.success) {
+        profileImageUrl = profilePic.url;
+      }
+    }
+
     const user = await User.create({
       userName,
+
       email,
       password: hashedPassword,
+      profileImageUrl,
     });
 
     const rawToken = generateToken(20);
