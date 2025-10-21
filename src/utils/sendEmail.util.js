@@ -1,19 +1,29 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import { Resend } from "resend";
+
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT || 587),
+  host: process.env.ELASTIC_HOST,
+  port: process.env.ELASTIC_PORT || 587,
   secure: false,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: process.env.ELASTIC_USERNAME,
+    pass: process.env.ELASTIC_PASSWORD,
   },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 });
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+transporter.verify((err, success) => {
+  if (err) {
+    console.log("Email transporter verification failed: ", err);
+  } else {
+    console.log("Email server is ready to send messages");
+  }
+});
+
 export const sendEmail = async (to, subject, html) => {
   try {
     console.log("Sending email to:", to);
@@ -24,22 +34,9 @@ export const sendEmail = async (to, subject, html) => {
       html,
     });
     console.log("Email sent:", info.response);
+    return info;
   } catch (err) {
     console.error("Email send failed:", err);
-    throw err;
-  }
-};
-
-export const sendEmailUsingResend = async (to, subject, html) => {
-  try {
-    await resend.emails.send({
-      from: process.env.RESEND_EMAIL_FROM,
-      to,
-      subject,
-      html,
-    });
-  } catch (err) {
-    console.error("Email send failed From Resend:", err);
     throw err;
   }
 };

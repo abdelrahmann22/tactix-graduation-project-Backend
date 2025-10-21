@@ -3,15 +3,19 @@ import dotenv from "dotenv";
 import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 import { connectDB } from "./config/db.config.js";
 import authRouter from "./routes/auth.router.js";
-const app = express();
+
+dotenv.config();
 
 connectDB();
+
+const app = express();
 
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
 
 app.use(errorHandler);
-app.listen(80, () => {
-  console.log("Server is running on port 80");
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server is running on localhost:${port}`);
 });
