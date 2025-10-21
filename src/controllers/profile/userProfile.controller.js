@@ -24,6 +24,10 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     message: "Data edited successfully",
-    data: user,
+    data: {
+      id: user._id,
+      username: user.userName,
+      profileImageUrl: user.profileImageUrl,
+    },
   });
 });
