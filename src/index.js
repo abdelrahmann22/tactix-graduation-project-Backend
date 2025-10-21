@@ -12,9 +12,17 @@ const app = express();
 
 app.use(express.json());
 
+app.use("/health", (req, res) => {
+  res.json({
+    health:
+      "Our server is in full health but not suitable for our developers health",
+  });
+});
+
 app.use("/api/auth", authRouter);
 
 app.use(errorHandler);
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on localhost:${port}`);
