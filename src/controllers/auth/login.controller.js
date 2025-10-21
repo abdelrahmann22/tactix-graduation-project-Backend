@@ -12,7 +12,6 @@ export const loginController = asyncHandler(async (req, res) => {
       id: result.user._id,
       userName: result.user.userName,
       email: result.user.email,
-      isVerified: result.user.isVerified,
     },
   });
 });

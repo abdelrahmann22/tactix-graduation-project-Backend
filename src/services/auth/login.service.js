@@ -32,6 +32,7 @@ export const loginService = async ({ email, password }) => {
       userId: user._id,
       email: user.email,
       userName: user.userName,
+      isVerified: user.isVerified,
     });
 
     return {
