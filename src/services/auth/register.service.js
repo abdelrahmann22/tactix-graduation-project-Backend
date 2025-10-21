@@ -37,9 +37,9 @@ export const registerService = async ({
       }
     }
 
+    console.log("email :", email);
     const user = await User.create({
       userName,
-
       email,
       password: hashedPassword,
       profileImageUrl,
