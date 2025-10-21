@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { User } from "../../models/user.model.js";
 import { Token } from "../../models/token.model.js";
 import { generateToken, hashToken } from "../../utils/token.util.js";
-import { sendEmail, sendEmailUsingResend } from "../../utils/sendEmail.util.js";
+import { sendEmail } from "../../utils/sendEmail.util.js";
 import { CustomError } from "../../utils/customError.util.js";
 import { verifyEmailTemplate } from "../../utils/emailTemplates/verfiyEmailTemplate.js";
 export const registerService = async ({ userName, email, password }) => {
