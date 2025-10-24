@@ -2,11 +2,26 @@ import bcrypt from "bcryptjs";
 import { User } from "../../models/user.model.js";
 import { signJwt } from "../../utils/jwt.util.js";
 import { AppError } from "../../utils/app.error.js";
+import { z } from "zod";
+const loginSchema = z.object({
+  email: z
+    .string({ required_error: "Email is required" })
+    .email("Invalid Email Format"),
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(6, "Password must be at least 6 characters long"),
+});
 
 export const loginService = async ({ email, password }) => {
-  // Validate inputs
-  if (!email || !password) {
-    throw new AppError(400, "Email and password are required");
+  const parsedResult = loginSchema.safeParse({ email, password });
+  console.log("Parsed Result:", parsedResult);
+
+  if (!parsedResult.success) {
+    const errorMesssage = parsedResult.error.issues
+      .map((e) => e.message)
+      .join(",");
+
+    throw new AppError(400, `Invalid input :${errorMesssage}`);
   }
 
   try {
