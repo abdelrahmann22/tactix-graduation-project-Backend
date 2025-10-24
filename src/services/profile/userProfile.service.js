@@ -2,6 +2,7 @@ import { AppError } from "../../utils/app.error.js";
 import { User } from "../../models/user.model.js";
 
 export const getUserProfileService = async (userId) => {
+  if (!userId) throw new AppError(400, "User Id is required");
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, "User not found");
 

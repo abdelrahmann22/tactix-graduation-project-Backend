@@ -14,19 +14,10 @@ const authRouter = express.Router();
 authRouter.post(
   "/register",
   uploadProfilePicture.single("image"),
-  validateRegister,
   registerController
 );
 authRouter.get("/verify", verifyEmailController);
 // Remove login validation temporarly
 authRouter.post("/login", loginController);
-
-// Protected routes
-authRouter.get("/profile", authMiddleware, (req, res) => {
-  res.json({
-    message: "This is a protected route",
-    user: req.user,
-  });
-});
 
 export default authRouter;

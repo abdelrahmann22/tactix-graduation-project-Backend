@@ -6,15 +6,38 @@ import { sendEmail } from "../../utils/sendEmail.util.js";
 import { AppError } from "../../utils/app.error.js";
 import { verifyEmailTemplate } from "../../utils/emailTemplates/verfiyEmailTemplate.js";
 import { uploadToCloudinary } from "../../config/profile-pic.cloudinary.config.js";
+import { z } from "zod";
+const registerSchema = z.object({
+  userName: z
+    .string({ required_error: "Username is required" })
+    .min(3, "Username must be at least 3 characters long"),
+  email: z
+    .string({ required_error: "Email is required" })
+    .email("Invalid email format"),
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(6, "Password must be at least 6 characters long"),
+  filePath: z.any().optional(),
+});
 export const registerService = async ({
   userName,
   email,
   password,
   filePath,
 }) => {
-  // Validate inputs
-  if (!userName || !email || !password) {
-    throw new AppError(400, "All fields are required");
+  const parsedResult = registerSchema.safeParse({
+    userName,
+    email,
+    password,
+    filePath,
+  });
+  console.log("Parsed Result:", parsedResult);
+
+  if (!parsedResult.success) {
+    const errorMessages = parsedResult.error.issues
+      .map((e) => e.message)
+      .join(", ");
+    throw new AppError(400, `Invalid input: ${errorMessages}`);
   }
 
   const existing = await User.findOne({ email });
