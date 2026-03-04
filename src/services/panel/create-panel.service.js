@@ -3,13 +3,13 @@ import { AppError } from "../../utils/app.error.js";
 
 export const CreatePanelService = async (userId, title, tags) => {
   if (!userId) {
-    throw AppError(400, "user Id is missed");
+    throw new AppError(400, "user Id is missed");
   }
   if (!title) {
-    throw AppError(400, "Please provide a title");
+    throw new AppError(400, "Please provide a title");
   }
   if (!tags || tags.lenght == 0) {
-    throw AppError(400, "Please provide a valid tags they may be empty");
+    throw new AppError(400, "Please provide a valid tags they may be empty");
   }
 
   const panel = await Panel.create({ userId, title, tags });
