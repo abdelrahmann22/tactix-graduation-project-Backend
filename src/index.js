@@ -8,6 +8,8 @@ import profileRouter from "./routes/profile.router.js";
 import matchRouter from "./routes/match.router.js";
 import TagRouter from "./routes/tag.router.js";
 import panelRouter from "./routes/panel.router.js";
+import { TacticalBoard } from "./models/tactical-borad.model.js";
+import tacticalBoardRouter from "./routes/tactical-board.router.js";
 
 dotenv.config();
 
@@ -40,6 +42,7 @@ app.use("/api/profile", profileRouter);
 app.use("/api/match", matchRouter);
 app.use("/api/tag", TagRouter);
 app.use("/api/panel", panelRouter);
+app.use("/api/board", tacticalBoardRouter);
 app.use(errorHandler);
 
 const port = process.env.PORT || 3000;
