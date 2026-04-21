@@ -20,6 +20,8 @@ export const VerifiyTagUploadService = async (tagId, userId) => {
     await AWSHeadObject(key);
 
     tag.clipURL = fileUrl;
+
+    await tag.save();
     return {
       success: true,
       message: "Clip Uploaded Successfully",
