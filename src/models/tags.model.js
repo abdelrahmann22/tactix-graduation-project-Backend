@@ -22,11 +22,14 @@ const tagSchema = new mongoose.Schema(
     notes: {
       type: String,
     },
+    clipKey: {
+      type: String,
+    },
     clipURL: {
       type: String, // URL from cloud provider when clip is exported
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Tag = mongoose.model("Tag", tagSchema);
