@@ -11,14 +11,13 @@ export const GetTagBoardService = async (tagId, userId) => {
       throw new AppError(403, "you are not authorized");
 
     const existingBoard = await TacticalBoard.find({ tagId: tagId });
-    if (!existingBoard) {
-      throw new AppError(404, "There's no existing board");
-    }
-
     return {
       success: true,
-      message: "Board Retrieved Successfully",
-      data: existingBoard,
+      message:
+        existingBoard.length > 0
+          ? "Board retrieved successfully"
+          : "No board found for this tag",
+      data: existingBoard, // ممكن تكون [] وده طبيعي
     };
   } catch (err) {
     console.log(err);

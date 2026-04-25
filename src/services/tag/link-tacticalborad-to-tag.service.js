@@ -10,9 +10,9 @@ export const LinkTagToNewTacticalBoardService = async (tagId, userId) => {
     if (tag.matchId.userId.toString() !== userId.toString())
       throw new AppError(403, "you are not authorized");
 
-    const existingBoard = await TacticalBoard.find({ tagId: tagId });
+    const existingBoard = await TacticalBoard.findOne({ tagId: tagId });
     if (existingBoard) {
-      throw new AppError(404, "tactical board already exists");
+      throw new AppError(409, "tactical board already exists");
     }
 
     const tacticalBoard = await TacticalBoard.create({
