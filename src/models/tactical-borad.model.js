@@ -6,6 +6,10 @@ const tacticalBoardSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  tagId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Tag",
+  },
   name: {
     type: String,
     required: true,
