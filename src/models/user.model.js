@@ -26,6 +26,10 @@ userSchema.pre("findOneAndDelete", async function (next) {
     await mongoose.model("Match").deleteMany({
       userId: user._id,
     });
+
+    await mongoose.model("Chat").deleteMany({
+      userId: user._id,
+    });
   }
 
   next();
