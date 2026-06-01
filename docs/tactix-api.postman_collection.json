@@ -1,0 +1,539 @@
+{
+  "info": {
+    "name": "Tactix API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{token}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" },
+    { "key": "matchId", "value": "" },
+    { "key": "tagId", "value": "" },
+    { "key": "panelId", "value": "" },
+    { "key": "boardId", "value": "" },
+    { "key": "chatId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "auth": { "type": "none" },
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"coach1\",\n  \"email\": \"coach1@example.com\",\n  \"password\": \"123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) pm.collectionVariables.set('token', res.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"coach1@example.com\",\n  \"password\": \"123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify?token=&id=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify"],
+              "query": [
+                { "key": "token", "value": "", "description": "Verification token from email" },
+                { "key": "id", "value": "", "description": "User ObjectId" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/profile", "host": ["{{baseUrl}}"], "path": ["api", "profile"] }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/profile", "host": ["{{baseUrl}}"], "path": ["api", "profile"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"coach1_updated\",\n  \"profileImageUrl\": \"https://example.com/avatar.jpg\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Match",
+      "item": [
+        {
+          "name": "Create Match",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) pm.collectionVariables.set('matchId', res.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/match", "host": ["{{baseUrl}}"], "path": ["api", "match"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Champions League Final\",\n  \"description\": \"UCL Final 2026\",\n  \"teamA\": \"Barcelona\",\n  \"teamB\": \"Real Madrid\",\n  \"matchDate\": \"2026-06-01\",\n  \"teamALogo\": \"https://example.com/barca.png\",\n  \"teamBLogo\": \"https://example.com/madrid.png\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Matches",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/match?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "match"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Match by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/match/{{matchId}}", "host": ["{{baseUrl}}"], "path": ["api", "match", "{{matchId}}"] }
+          }
+        },
+        {
+          "name": "Update Match",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/match/{{matchId}}", "host": ["{{baseUrl}}"], "path": ["api", "match", "{{matchId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Match Title\",\n  \"matchResult\": \"2-1\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Match",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/match/{{matchId}}", "host": ["{{baseUrl}}"], "path": ["api", "match", "{{matchId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tag",
+      "item": [
+        {
+          "name": "Create Tag",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) pm.collectionVariables.set('tagId', res.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/tag/{{matchId}}", "host": ["{{baseUrl}}"], "path": ["api", "tag", "{{matchId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startTime\": 120,\n  \"endTime\": 145,\n  \"event\": \"Goal\",\n  \"note\": \"Counter-attack from the right wing\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Clip Upload URL",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/tag/{{tagId}}/upload-url", "host": ["{{baseUrl}}"], "path": ["api", "tag", "{{tagId}}", "upload-url"] }
+          }
+        },
+        {
+          "name": "Verify Clip Upload",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/tag/{{tagId}}/verify-upload", "host": ["{{baseUrl}}"], "path": ["api", "tag", "{{tagId}}", "verify-upload"] }
+          }
+        },
+        {
+          "name": "Link Tag to Tactical Board",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) pm.collectionVariables.set('boardId', res.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/tag/{{tagId}}/link", "host": ["{{baseUrl}}"], "path": ["api", "tag", "{{tagId}}", "link"] }
+          }
+        },
+        {
+          "name": "Get Tag's Board",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/tag/{{tagId}}/board", "host": ["{{baseUrl}}"], "path": ["api", "tag", "{{tagId}}", "board"] }
+          }
+        },
+        {
+          "name": "Update Tag",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/tag/{{tagId}}", "host": ["{{baseUrl}}"], "path": ["api", "tag", "{{tagId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"Shot on Target\",\n  \"notes\": \"Updated analysis\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Tag",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/tag/{{tagId}}", "host": ["{{baseUrl}}"], "path": ["api", "tag", "{{tagId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Panel",
+      "item": [
+        {
+          "name": "Create Panel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) pm.collectionVariables.set('panelId', res.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/panel", "host": ["{{baseUrl}}"], "path": ["api", "panel"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"First Half Analysis\",\n  \"tags\": [\"Goal\", \"Build Up\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Panels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/panel", "host": ["{{baseUrl}}"], "path": ["api", "panel"] }
+          }
+        },
+        {
+          "name": "Get Panel by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/panel/{{panelId}}", "host": ["{{baseUrl}}"], "path": ["api", "panel", "{{panelId}}"] }
+          }
+        },
+        {
+          "name": "Update Panel",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/panel/{{panelId}}", "host": ["{{baseUrl}}"], "path": ["api", "panel", "{{panelId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Panel Title\",\n  \"tags\": [\"Goal\", \"Build Up\", \"Counter Attack\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Panel",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/panel/{{panelId}}", "host": ["{{baseUrl}}"], "path": ["api", "panel", "{{panelId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tactical Board",
+      "item": [
+        {
+          "name": "Create Board",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) pm.collectionVariables.set('boardId', res.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/board", "host": ["{{baseUrl}}"], "path": ["api", "board"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Barcelona Attack Setup\",\n  \"fieldType\": \"half\",\n  \"fieldRotation\": 0,\n  \"homeTeam\": {\n    \"name\": \"Barcelona\",\n    \"primaryColor\": \"#A50044\",\n    \"secondaryColor\": \"#004D98\",\n    \"textColor\": \"#FFFFFF\"\n  },\n  \"awayTeam\": {\n    \"name\": \"Real Madrid\",\n    \"primaryColor\": \"#FFFFFF\",\n    \"secondaryColor\": \"#FEBE10\",\n    \"textColor\": \"#000000\"\n  },\n  \"scenes\": [\n    {\n      \"players\": [\n        { \"team\": \"home\", \"x\": 30, \"y\": 50, \"role\": \"ST\" },\n        { \"team\": \"home\", \"x\": 45, \"y\": 30, \"role\": \"LW\" },\n        { \"team\": \"away\", \"x\": 60, \"y\": 50, \"role\": \"CB\" }\n      ]\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Boards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/board", "host": ["{{baseUrl}}"], "path": ["api", "board"] }
+          }
+        },
+        {
+          "name": "Get Board by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/board/{{boardId}}", "host": ["{{baseUrl}}"], "path": ["api", "board", "{{boardId}}"] }
+          }
+        },
+        {
+          "name": "Update Board",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/board/{{boardId}}", "host": ["{{baseUrl}}"], "path": ["api", "board", "{{boardId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Board Name\",\n  \"scenes\": [\n    {\n      \"players\": [\n        { \"team\": \"home\", \"x\": 35, \"y\": 50, \"role\": \"ST\" },\n        { \"team\": \"home\", \"x\": 50, \"y\": 25, \"role\": \"RW\" },\n        { \"team\": \"home\", \"x\": 40, \"y\": 60, \"role\": \"LW\" },\n        { \"team\": \"away\", \"x\": 60, \"y\": 50, \"role\": \"CB\" },\n        { \"team\": \"away\", \"x\": 55, \"y\": 70, \"role\": \"LB\" }\n      ]\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Scene",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/board/{{boardId}}/{{sceneId}}", "host": ["{{baseUrl}}"], "path": ["api", "board", "{{boardId}}", "{{sceneId}}"] },
+            "description": "Delete a specific scene from a board. sceneId is the nanoid-generated string."
+          }
+        },
+        {
+          "name": "Delete Board",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/board/{{boardId}}", "host": ["{{baseUrl}}"], "path": ["api", "board", "{{boardId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Chat",
+      "item": [
+        {
+          "name": "Create General Chat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) pm.collectionVariables.set('chatId', res.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/llm/chat", "host": ["{{baseUrl}}"], "path": ["api", "llm", "chat"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"general\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Clip Chat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) pm.collectionVariables.set('chatId', res.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/llm/chat", "host": ["{{baseUrl}}"], "path": ["api", "llm", "chat"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"clip\",\n  \"tagId\": \"{{tagId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Board Chat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) pm.collectionVariables.set('chatId', res.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/llm/chat", "host": ["{{baseUrl}}"], "path": ["api", "llm", "chat"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"board\",\n  \"boardId\": \"{{boardId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Chats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/llm/chat?type=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "llm", "chat"],
+              "query": [
+                { "key": "type", "value": "", "description": "general | clip | board (optional)" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Chat with Messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/llm/chat/{{chatId}}?page=1&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "llm", "chat", "{{chatId}}"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "50" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/llm/chat/{{chatId}}/message", "host": ["{{baseUrl}}"], "path": ["api", "llm", "chat", "{{chatId}}", "message"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"What formation works best against a high press?\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Chat",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/llm/chat/{{chatId}}", "host": ["{{baseUrl}}"], "path": ["api", "llm", "chat", "{{chatId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -8,7 +8,6 @@ import profileRouter from "./routes/profile.router.js";
 import matchRouter from "./routes/match.router.js";
 import TagRouter from "./routes/tag.router.js";
 import panelRouter from "./routes/panel.router.js";
-import { TacticalBoard } from "./models/tactical-borad.model.js";
 import tacticalBoardRouter from "./routes/tactical-board.router.js";
 import llmRouter from "./routes/llm.router.js";
 

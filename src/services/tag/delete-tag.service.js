@@ -1,6 +1,7 @@
 import { Tag } from "../../models/tags.model.js";
 import { AppError } from "../../utils/app.error.js";
 import { Match } from "../../models/match.model.js";
+import { Chat } from "../../models/chat.model.js";
 import { redis } from "../../config/redis.config.js";
 export const deleteTagService = async (tagId, userId) => {
   try {
@@ -15,6 +16,8 @@ export const deleteTagService = async (tagId, userId) => {
     });
 
     await Tag.deleteOne({ _id: tagId });
+
+    await Chat.deleteMany({ type: "clip", tagId });
 
     // invalidate cached match
     await redis.del(`match:${tag.matchId._id}`);

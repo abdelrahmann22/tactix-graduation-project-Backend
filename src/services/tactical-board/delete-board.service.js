@@ -1,4 +1,5 @@
 import { TacticalBoard } from "../../models/tactical-borad.model.js";
+import { Chat } from "../../models/chat.model.js";
 import { AppError } from "../../utils/app.error.js";
 
 export const DeleteBoardByIdService = async (userId, boardId) => {
@@ -13,6 +14,9 @@ export const DeleteBoardByIdService = async (userId, boardId) => {
   if (result.deletedCount === 0) {
     throw new AppError(404, "board isn't found or access denied");
   }
+
+  await Chat.deleteMany({ type: "board", boardId });
+
   return {
     success: true,
     message: "board deleted successfully",
